@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="fab__styleable">
+
+    </declare-styleable>
+
+    <item type="id" name="fab__main_container"/>
+    <item type="id" name="fab__action_button"/>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fab__size_mini">40dp</dimen>
+    <dimen name="fab__size_normal">56dp</dimen>
+    <dimen name="fab__shadow_radius">6dp</dimen>
+    <dimen name="fab__normal_margin">23dp</dimen>
+    <dimen name="fab__mini_margin">16dp</dimen>
+</resources>
