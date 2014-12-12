@@ -57,6 +57,22 @@
         android:text="Left"/>
 
     <Button
+        android:id="@+id/show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bottom_left"
+        android:layout_alignLeft="@+id/center_left"
+        android:text="Show"/>
+
+    <Button
+        android:id="@+id/hide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bottom_right"
+        android:layout_alignLeft="@+id/center_right"
+        android:text="Hide"/>
+
+    <Button
         android:id="@+id/center_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

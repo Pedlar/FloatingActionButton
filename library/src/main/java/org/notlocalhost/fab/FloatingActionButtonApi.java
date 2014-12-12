@@ -1,6 +1,7 @@
 package org.notlocalhost.fab;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 /**
@@ -19,4 +20,6 @@ public interface FloatingActionButtonApi {
     public int getSize();
     public void setGravity(int gravity);
     public ActionButton getActionButton();
+    public void setIcon(int resId);
+    public void setIcon(Drawable drawable);
 }

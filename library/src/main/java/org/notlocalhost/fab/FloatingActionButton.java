@@ -1,9 +1,11 @@
 package org.notlocalhost.fab;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
@@ -27,6 +29,9 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
     private int mSize = SIZE_NORMAL;
     private int mColor = Color.RED;
     private int mButtonGravity = Gravity.BOTTOM | Gravity.RIGHT;
+    private boolean isShowing = true;
+    private float mActionButtonX;
+    private float mActionButtonY;
 
     public FloatingActionButton(Activity context) {
         super(context);
@@ -51,7 +56,7 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
         }
 
         mAttachToWindow = attachToWindow;
-        
+
         ViewGroup.LayoutParams lParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         setLayoutParams(lParams);
 
@@ -113,6 +118,9 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
         } else{
             addView(mActionButton, actionButtonParams);
         }
+
+        mActionButtonX = mActionButton.getX();
+        mActionButtonY = mActionButton.getY();
     }
 
     private void positionActionButton() {
@@ -139,6 +147,11 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
                     mActionButton.setX(viewRect.exactCenterX() - halfWidth);
                 }
             }
+        }
+
+        if(mActionButton != null) {
+            mActionButtonX = mActionButton.getX();
+            mActionButtonY = mActionButton.getY();
         }
     }
 
@@ -180,12 +193,57 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
 
     @Override
     public void show() {
-        // TODO: STUB!
+        if(!isShowing && mActionButton != null) {
+            float x = mActionButton.getX();
+            float y = mActionButton.getY();
+
+            if((mButtonGravity & Gravity.BOTTOM) == Gravity.BOTTOM
+                    || (mButtonGravity & Gravity.TOP) == Gravity.TOP) {
+                y = mActionButtonY;
+            } else {
+                x = mActionButtonX;
+            }
+            mActionButton.animate().x(x).y(y).setListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    isShowing = true;
+                }
+                @Override public void onAnimationStart(Animator animation) { }
+                @Override public void onAnimationCancel(Animator animation) { }
+                @Override public void onAnimationRepeat(Animator animation) { }
+            });
+        }
     }
 
     @Override
     public void hide() {
-        // TODO: STUB!
+        if(isShowing && mActionButton != null) {
+            float x = mActionButtonX = mActionButton.getX();
+            float y = mActionButtonY = mActionButton.getY();
+
+
+            if((mButtonGravity & Gravity.BOTTOM) == Gravity.BOTTOM) {
+                y = getHeight() + mActionButton.getHeight();
+            } else if ((mButtonGravity & Gravity.TOP) == Gravity.TOP) {
+                y = -1 * mActionButton.getHeight();
+            } else if ((mButtonGravity & Gravity.CENTER_VERTICAL) == Gravity.CENTER_VERTICAL
+                    && (mButtonGravity & Gravity.RIGHT) == Gravity.RIGHT) {
+                x = getWidth() + mActionButton.getWidth();
+            } else if((mButtonGravity & Gravity.CENTER_VERTICAL) == Gravity.CENTER_VERTICAL
+                    && (mButtonGravity & Gravity.LEFT) == Gravity.LEFT) {
+                x = -1 * mActionButton.getWidth();
+            }
+
+            mActionButton.animate().x(x).y(y).setListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    isShowing = false;
+                }
+                @Override public void onAnimationStart(Animator animation) { }
+                @Override public void onAnimationCancel(Animator animation) { }
+                @Override public void onAnimationRepeat(Animator animation) { }
+            });
+        }
     }
 
     @Override
@@ -216,5 +274,19 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
     @Override
     public ActionButton getActionButton() {
         return mActionButton;
+    }
+
+    @Override
+    public void setIcon(int resId) {
+        if(mActionButton != null) {
+            mActionButton.setImageResource(resId);
+        }
+    }
+
+    @Override
+    public void setIcon(Drawable drawable) {
+        if(mActionButton != null) {
+            mActionButton.setImageDrawable(drawable);
+        }
     }
 }

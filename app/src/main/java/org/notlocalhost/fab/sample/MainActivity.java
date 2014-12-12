@@ -31,6 +31,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.center_left).setOnClickListener(this);
         findViewById(R.id.center_right).setOnClickListener(this);
         findViewById(R.id.attach_to_view).setOnClickListener(this);
+        findViewById(R.id.hide).setOnClickListener(this);
+        findViewById(R.id.show).setOnClickListener(this);
     }
 
     @Override
@@ -82,6 +84,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.attach_to_view:
                 mFab.setAttachToWindow(false);
                 mFab.attachToView(findViewById(R.id.attach_view));
+                break;
+            case R.id.hide:
+                mFab.hide();
+                break;
+            case R.id.show:
+                mFab.show();
                 break;
         }
     }
