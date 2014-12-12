@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#00000000"
+    android:gravity="right|center_vertical"
+    android:padding="5dp">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:layout_marginRight="@dimen/fab__normal_margin">
+
+        <TextView
+            android:id="@+id/fab__menu_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Madison"
+            android:textColor="@android:color/black"
+            android:padding="5dp"/>
+
+    </FrameLayout>
+
+    <org.notlocalhost.fab.ActionButton
+        android:id="@+id/fab__menu_icon"
+        android:layout_width="@dimen/fab__size_mini"
+        android:layout_height="@dimen/fab__size_mini"
+        android:layout_marginRight="@dimen/fab__menu_right_margin"/>
+
+</LinearLayout>

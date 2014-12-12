@@ -8,7 +8,10 @@ import android.view.MenuItem;
 import android.view.View;
 
 import org.notlocalhost.fab.FloatingActionButton;
-import org.notlocalhost.fab.sample.R;
+import org.notlocalhost.fab.FloatingActionMenuItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends Activity implements View.OnClickListener {
@@ -33,6 +36,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.attach_to_view).setOnClickListener(this);
         findViewById(R.id.hide).setOnClickListener(this);
         findViewById(R.id.show).setOnClickListener(this);
+
+        List<FloatingActionMenuItem> menuItemList = new ArrayList<>();
+        for(int i = 0; i < 5; i++) {
+            FloatingActionMenuItem floatingActionMenuItem = new FloatingActionMenuItem();
+            floatingActionMenuItem.setLabel("Sample " + i);
+            menuItemList.add(floatingActionMenuItem);
+        }
+        mFab.setMenu(menuItemList);
     }
 
     @Override

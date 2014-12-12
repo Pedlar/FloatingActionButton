@@ -1,8 +1,9 @@
 package org.notlocalhost.fab;
 
-import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+
+import java.util.List;
 
 /**
  * Created by pedlar on 11/29/14.
@@ -22,4 +23,7 @@ public interface FloatingActionButtonApi {
     public ActionButton getActionButton();
     public void setIcon(int resId);
     public void setIcon(Drawable drawable);
+
+    void setMenu(List<FloatingActionMenuItem> menuItemList);
+    void setMenu(int menuResId);
 }

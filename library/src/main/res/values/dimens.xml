@@ -5,4 +5,5 @@
     <dimen name="fab__shadow_radius">6dp</dimen>
     <dimen name="fab__normal_margin">23dp</dimen>
     <dimen name="fab__mini_margin">16dp</dimen>
+    <dimen name="fab__menu_right_margin">3dp</dimen>
 </resources>

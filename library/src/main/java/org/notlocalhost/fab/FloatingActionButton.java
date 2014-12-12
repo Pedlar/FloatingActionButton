@@ -7,12 +7,18 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v7.internal.view.menu.MenuBuilder;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.RelativeLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by pedlar on 11/29/14.
@@ -33,6 +39,10 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
     private float mActionButtonX;
     private float mActionButtonY;
 
+    private FloatingActionMenuView mActionMenuView;
+
+    private View mMenuFog;
+
     public FloatingActionButton(Activity context) {
         super(context);
         init(context, false);
@@ -47,8 +57,6 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
         setId(R.id.fab__main_container);
 
         initThemeAttrs();
-
-        setupActionButton();
 
         if(context instanceof Activity) {
             Activity activity = (Activity)context;
@@ -66,6 +74,15 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
             mWindow.getDecorView().requestLayout();
             mWindow.getDecorView().invalidate();
         }
+
+        mMenuFog = new View(getContext());
+        mMenuFog.setBackgroundColor(0xffeeeeee);
+        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.addRule(CENTER_IN_PARENT, 1);
+        addView(mMenuFog, layoutParams);
+        mMenuFog.setVisibility(View.GONE);
+
+        setupActionButton();
     }
 
     private void initThemeAttrs() {
@@ -119,6 +136,10 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
             addView(mActionButton, actionButtonParams);
         }
 
+        if(mActionMenuView != null) {
+            mActionMenuView.setLayoutParams(getActionMenuLayoutParams());
+        }
+
         mActionButtonX = mActionButton.getX();
         mActionButtonY = mActionButton.getY();
     }
@@ -155,6 +176,78 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
         }
     }
 
+    private LayoutParams getActionMenuLayoutParams() {
+        RelativeLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        if ((mButtonGravity & Gravity.BOTTOM) == Gravity.BOTTOM) {
+            layoutParams.addRule(ABOVE, R.id.fab__action_button);
+        } else if ((mButtonGravity & Gravity.TOP) == Gravity.TOP) {
+            layoutParams.addRule(BELOW, R.id.fab__action_button);
+        }
+
+        if ((mButtonGravity & Gravity.LEFT) == Gravity.LEFT) {
+            layoutParams.addRule(ALIGN_LEFT, R.id.fab__action_button);
+        } else if ((mButtonGravity & Gravity.RIGHT) == Gravity.RIGHT) {
+            layoutParams.addRule(ALIGN_RIGHT, R.id.fab__action_button);
+        }
+
+        return layoutParams;
+    }
+
+    private void setupFloatingActionMenu(List<FloatingActionMenuItem> menuItemList) {
+        mActionMenuView = new FloatingActionMenuView(getContext(), menuItemList);
+        mActionMenuView.setVisibility(View.GONE);
+        addView(mActionMenuView, getActionMenuLayoutParams());
+        if(mActionButton != null) {
+            mActionButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mActionMenuView.getVisibility() == View.GONE) {
+                        expandMenu();
+                    } else {
+                        collapeMenu();
+                    }
+                }
+            });
+        }
+    }
+
+    private void expandMenu() {
+        mActionMenuView.setAlpha(0f);
+        mActionMenuView.setVisibility(View.VISIBLE);
+        mActionMenuView.animate().alpha(1f).setDuration(200).setListener(null);
+
+        mMenuFog.setAlpha(0f);
+        mMenuFog.setVisibility(View.VISIBLE);
+        mMenuFog.animate().alpha(.7f).setDuration(200);
+    }
+
+    private void collapeMenu() {
+        mActionMenuView.animate().alpha(0f).setDuration(200).setListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mMenuFog.setVisibility(View.GONE);
+                mActionMenuView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        mMenuFog.animate().alpha(0f).setDuration(200);
+    }
+
     @Override
     public void attachToView(View view) {
         mAttachedView = view;
@@ -164,7 +257,9 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
                     @Override
                     public void onGlobalLayout() {
                         positionActionButton();
-                        mAttachedView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            mAttachedView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
                     }
                 });
 
@@ -288,5 +383,29 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
         if(mActionButton != null) {
             mActionButton.setImageDrawable(drawable);
         }
+    }
+
+    @Override
+    public void setMenu(int menuResId) {
+        MenuInflater menuInflater = new MenuInflater(getContext());
+        Menu menu = new MenuBuilder(getContext());
+        menuInflater.inflate(menuResId, menu);
+
+        List<FloatingActionMenuItem> menuItems = new ArrayList<FloatingActionMenuItem>();
+        for(int i = 0; i < menu.size(); i++) {
+            FloatingActionMenuItem menuItem = new FloatingActionMenuItem();
+            menuItem.setLabel(menu.getItem(i).getTitle().toString());
+            menuItem.setIcon(menu.getItem(i).getIcon());
+        }
+        setupFloatingActionMenu(menuItems);
+    }
+
+    @Override
+    public void setMenu(List<FloatingActionMenuItem> menuItemList) {
+        setupFloatingActionMenu(menuItemList);
+    }
+
+    public void setMenuItemClickListener() {
+
     }
 }
