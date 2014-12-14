@@ -9,6 +9,7 @@ import android.view.View;
 
 import org.notlocalhost.fab.FloatingActionButton;
 import org.notlocalhost.fab.FloatingActionMenuItem;
+import org.notlocalhost.fab.MenuAnimation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.attach_to_view).setOnClickListener(this);
         findViewById(R.id.hide).setOnClickListener(this);
         findViewById(R.id.show).setOnClickListener(this);
+        findViewById(R.id.menu_overshoot).setOnClickListener(this);
+        findViewById(R.id.menu_scalein).setOnClickListener(this);
 
         List<FloatingActionMenuItem> menuItemList = new ArrayList<>();
         for(int i = 0; i < 5; i++) {
@@ -101,6 +104,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.show:
                 mFab.show();
+                break;
+            case R.id.menu_scalein:
+                mFab.setMenuAnimation(MenuAnimation.SCALE_IN);
+                break;
+            case R.id.menu_overshoot:
+                mFab.setMenuAnimation(MenuAnimation.OVERSHOOT);
                 break;
         }
     }

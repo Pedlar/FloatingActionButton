@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#00000000"
+    android:gravity="left|center_vertical"
+    android:layout_marginBottom="8dp"
+    android:paddingLeft="5dp">
+
+    <org.notlocalhost.fab.ActionButton
+        android:id="@+id/fab__menu_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/fab__menu_right_margin"/>
+
+    <FrameLayout
+        android:id="@+id/fab__menu_label_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:layout_marginLeft="@dimen/fab__normal_margin">
+
+        <TextView
+            android:id="@+id/fab__menu_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Madison"
+            android:textColor="@android:color/black"
+            android:padding="5dp"/>
+
+    </FrameLayout>
+
+
+</LinearLayout>

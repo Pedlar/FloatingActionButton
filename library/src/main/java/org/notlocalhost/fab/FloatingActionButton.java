@@ -42,6 +42,7 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
     private FloatingActionMenuView mActionMenuView;
 
     private View mMenuFog;
+    private MenuAnimation mMenuAnimation;
 
     public FloatingActionButton(Activity context) {
         super(context);
@@ -103,8 +104,9 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
         mActionButton.endTransaction();
 
         int buttonMargin = Math.round(getResources().getDimension(mSize == SIZE_MINI ? R.dimen.fab__mini_margin : R.dimen.fab__normal_margin));
+        int size = (int)getResources().getDimension(mSize == SIZE_MINI ? R.dimen.fab__size_mini : R.dimen.fab__size_normal);
 
-        RelativeLayout.LayoutParams actionButtonParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams actionButtonParams = new LayoutParams(size, size);
 
         if(mAttachToWindow) {
             if ((mButtonGravity & Gravity.BOTTOM) == Gravity.BOTTOM) {
@@ -195,14 +197,16 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
     }
 
     private void setupFloatingActionMenu(List<FloatingActionMenuItem> menuItemList) {
-        mActionMenuView = new FloatingActionMenuView(getContext(), menuItemList);
-        mActionMenuView.setVisibility(View.GONE);
+        mActionMenuView = new FloatingActionMenuView(getContext(), mButtonGravity, menuItemList);
+        if(mMenuAnimation != null) {
+            mActionMenuView.setMenuAnimation(mMenuAnimation);
+        }
         addView(mActionMenuView, getActionMenuLayoutParams());
         if(mActionButton != null) {
             mActionButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mActionMenuView.getVisibility() == View.GONE) {
+                    if(!mActionMenuView.isVisible()) {
                         expandMenu();
                     } else {
                         collapeMenu();
@@ -213,39 +217,33 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
     }
 
     private void expandMenu() {
-        mActionMenuView.setAlpha(0f);
-        mActionMenuView.setVisibility(View.VISIBLE);
-        mActionMenuView.animate().alpha(1f).setDuration(200).setListener(null);
+        mActionMenuView.toggle();
 
         mMenuFog.setAlpha(0f);
         mMenuFog.setVisibility(View.VISIBLE);
-        mMenuFog.animate().alpha(.7f).setDuration(200);
+        mMenuFog.animate().alpha(.7f).setDuration(200).setListener(null);
     }
 
     private void collapeMenu() {
-        mActionMenuView.animate().alpha(0f).setDuration(200).setListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
+        mActionMenuView.toggle();
+        mMenuFog.animate().alpha(0f).setDuration(200).setListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mMenuFog.setVisibility(View.GONE);
-                mActionMenuView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-
             }
 
             @Override
             public void onAnimationRepeat(Animator animation) {
-
             }
         });
-        mMenuFog.animate().alpha(0f).setDuration(200);
     }
 
     @Override
@@ -364,6 +362,9 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
     public void setGravity(int gravity) {
         mButtonGravity = gravity;
         setupActionButton();
+        if(mActionMenuView != null) {
+            mActionMenuView.setGravity(mButtonGravity);
+        }
     }
 
     @Override
@@ -403,6 +404,14 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
     @Override
     public void setMenu(List<FloatingActionMenuItem> menuItemList) {
         setupFloatingActionMenu(menuItemList);
+    }
+
+    @Override
+    public void setMenuAnimation(MenuAnimation menuAnimation) {
+        mMenuAnimation = menuAnimation;
+        if(mActionMenuView != null) {
+            mActionMenuView.setMenuAnimation(mMenuAnimation);
+        }
     }
 
     public void setMenuItemClickListener() {

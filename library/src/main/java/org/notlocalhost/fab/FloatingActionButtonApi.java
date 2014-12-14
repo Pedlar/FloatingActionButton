@@ -26,4 +26,6 @@ public interface FloatingActionButtonApi {
 
     void setMenu(List<FloatingActionMenuItem> menuItemList);
     void setMenu(int menuResId);
+
+    void setMenuAnimation(MenuAnimation menuAnimation);
 }

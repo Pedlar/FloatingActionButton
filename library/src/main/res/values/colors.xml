@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="fab__shadow_start_color">#37000000</color>
+    <color name="fab__shadow_end_color">#03000000</color>
+</resources>

@@ -2,10 +2,13 @@ package org.notlocalhost.fab;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Rect;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.ImageButton;
@@ -17,7 +20,6 @@ import android.widget.ImageButton;
 class ActionButton extends ImageButton {
     private int mColor;
     private int mSize;
-    private GradientDrawable mMainBackground;
     private boolean isInTransaction;
 
     public ActionButton(Context context) {
@@ -65,56 +67,55 @@ class ActionButton extends ImageButton {
         drawActionButton();
     }
 
+    int getDrawableSize() {
+        int size = (int)(mSize == FloatingActionButton.SIZE_MINI ? getResources().getDimension(R.dimen.fab__size_mini) :
+                getResources().getDimension(R.dimen.fab__size_normal));
+        int shadowRadius = (int)getResources().getDimension(R.dimen.fab__shadow_radius);
+        return size + 2 * shadowRadius;
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        setMeasuredDimension(getDrawableSize(), getDrawableSize());
+    }
+
     void drawActionButton() {
         if(isInTransaction) return; // Don't make any changes yet if we're in a transactional state
-        int cicleResId;
 
-        if(mSize == FloatingActionButton.SIZE_MINI) {
-            cicleResId = needsShadow() ? R.drawable.fab__mini_shadow : R.drawable.fab__mini;
-        } else {
-            cicleResId = needsShadow() ? R.drawable.fab__normal_shadow : R.drawable.fab__normal;
-        }
+        float size = (mSize == FloatingActionButton.SIZE_MINI ? getResources().getDimension(R.dimen.fab__size_mini) :
+                getResources().getDimension(R.dimen.fab__size_normal));
 
-        Drawable background = getResources().getDrawable(cicleResId);
-        if (background instanceof LayerDrawable) {
-            LayerDrawable layers = (LayerDrawable) background;
-            if (layers.getNumberOfLayers() == 2) {
-                Drawable shadow = layers.getDrawable(0);
-                Drawable circle = layers.getDrawable(1);
-
-                if (shadow instanceof GradientDrawable) {
-                    ((GradientDrawable) shadow.mutate()).setGradientRadius(getShadowRadius(shadow, circle));
-                }
-
-                if (circle instanceof GradientDrawable) {
-                    setMainBackground(circle);
-                }
-            }
-        } else if (background instanceof GradientDrawable) {
-            setMainBackground(background);
-        }
+        float shadowRadius = getResources().getDimension(R.dimen.fab__shadow_radius);
+        float shadowOffset = getResources().getDimension(R.dimen.fab__shadow_offset);
+        RectF circleRect = new RectF(shadowRadius, shadowRadius - shadowOffset, shadowRadius + size, (shadowRadius - shadowOffset) + size);
+        Drawable background = createCircleDrawable(circleRect, mColor);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
             setBackgroundDrawable(background);
         else
             setBackground(background);
+
     }
 
-    private void setMainBackground(Drawable drawable) {
-        mMainBackground = (GradientDrawable)drawable.mutate();
-        mMainBackground.setColor(mColor);
-    }
+    private Drawable createCircleDrawable(RectF circleRect, int color) {
+        final Bitmap bitmap = Bitmap.createBitmap(getDrawableSize(), getDrawableSize(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bitmap);
 
-    int getShadowRadius(Drawable shadow, Drawable circle) {
-        int radius = 0;
-        if (shadow != null && circle != null) {
-            Rect rect = new Rect();
-            radius = (circle.getIntrinsicWidth() + (shadow.getPadding(rect) ? rect.left + rect.right : 0)) / 2;
-        }
-        return Math.max(1, radius);
+        float shadowRadius = getResources().getDimension(R.dimen.fab__shadow_radius);
+        float shadowOffset = getResources().getDimension(R.dimen.fab__shadow_offset);
+
+        final Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(color);
+        paint.setShadowLayer(shadowRadius, 0f, shadowOffset, Color.argb(100, 0, 0, 0));
+
+        canvas.drawOval(circleRect, paint);
+
+        return new BitmapDrawable(getResources(), bitmap);
     }
 
     boolean needsShadow() {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
+        return true;//Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
     }
 }
