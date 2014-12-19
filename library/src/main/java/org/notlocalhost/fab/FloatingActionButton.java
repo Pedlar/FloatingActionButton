@@ -3,11 +3,15 @@ package org.notlocalhost.fab;
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.internal.view.menu.MenuBuilder;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -87,7 +91,12 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
     }
 
     private void initThemeAttrs() {
-
+        TypedArray typedArray = getContext().obtainStyledAttributes(R.styleable.fab);
+        if(typedArray != null) {
+            setSize(typedArray.getInt(R.styleable.fab_fabSize, SIZE_NORMAL));
+            setColor(typedArray.getColor(R.styleable.fab_fabColor, Color.RED));
+            typedArray.recycle();
+        }
     }
 
     private void setupActionButton() {
@@ -350,7 +359,9 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
     @Override
     public void setSize(int size) {
         mSize = size;
-        setupActionButton();
+        if(mActionButton != null) {
+            setupActionButton();
+        }
     }
 
     @Override

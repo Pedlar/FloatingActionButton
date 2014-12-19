@@ -18,6 +18,22 @@ import java.util.List;
 public class MainActivity extends Activity implements View.OnClickListener {
     FloatingActionButton mFab;
 
+    int[] mIcons = new int[]{
+            android.R.drawable.ic_menu_camera,
+            android.R.drawable.ic_menu_compass,
+            android.R.drawable.ic_menu_help,
+            android.R.drawable.ic_menu_crop,
+            android.R.drawable.ic_menu_call
+    };
+
+    String[] mLabels = new String[] {
+            "Camera",
+            "Compass",
+            "Help",
+            "Crop",
+            "Call"
+    };
+
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -43,7 +59,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         List<FloatingActionMenuItem> menuItemList = new ArrayList<>();
         for(int i = 0; i < 5; i++) {
             FloatingActionMenuItem floatingActionMenuItem = new FloatingActionMenuItem();
-            floatingActionMenuItem.setLabel("Sample " + i);
+            floatingActionMenuItem.setLabel(mLabels[i]);
+            floatingActionMenuItem.setIcon(getResources().getDrawable(mIcons[i]));
             menuItemList.add(floatingActionMenuItem);
         }
         mFab.setMenu(menuItemList);

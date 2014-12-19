@@ -76,7 +76,7 @@ public class FloatingActionMenuView extends ViewGroup {
                 view.findViewById(R.id.fab__menu_label_container).setAlpha(0f);
             }
 
-            addView(view, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            addView(view, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         }
     }
 
@@ -181,8 +181,8 @@ public class FloatingActionMenuView extends ViewGroup {
         final ObjectAnimator labelExpandAnimator = new ObjectAnimator();
         final ObjectAnimator labelCollapseAnimator = new ObjectAnimator();
 
-        public LayoutParams(int wrapContent, int wrapContent1) {
-            super(wrapContent, wrapContent1);
+        public LayoutParams(int width, int height) {
+            super(width, height);
         }
 
         public void setupAnimations(View target, float fromY) {

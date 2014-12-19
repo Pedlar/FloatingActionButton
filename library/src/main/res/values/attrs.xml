@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="fab__styleable">
-
+    <declare-styleable name="fab">
+        <attr name="fabColor" format="color"/>
+        <attr name="fabSize" format="enum">
+            <enum name="mini" value="1"/>
+            <enum name="normal" value="0"/>
+        </attr>
     </declare-styleable>
 
     <item type="id" name="fab__main_container"/>
