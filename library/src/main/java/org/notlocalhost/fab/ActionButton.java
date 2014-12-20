@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 /**
@@ -88,6 +89,10 @@ class ActionButton extends ImageButton {
 
         float shadowRadius = getResources().getDimension(R.dimen.fab__shadow_radius);
         float shadowOffset = getResources().getDimension(R.dimen.fab__shadow_offset);
+
+        int padding = (int)shadowRadius;
+        setPadding(padding, 0, padding, padding); // moves padding up so icon will be centered in circle
+
         RectF circleRect = new RectF(shadowRadius, shadowRadius - shadowOffset, shadowRadius + size, (shadowRadius - shadowOffset) + size);
         Drawable background = createCircleDrawable(circleRect, mColor);
 
@@ -95,7 +100,6 @@ class ActionButton extends ImageButton {
             setBackgroundDrawable(background);
         else
             setBackground(background);
-
     }
 
     private Drawable createCircleDrawable(RectF circleRect, int color) {
@@ -106,6 +110,7 @@ class ActionButton extends ImageButton {
         float shadowOffset = getResources().getDimension(R.dimen.fab__shadow_offset);
 
         final Paint paint = new Paint();
+
         paint.setAntiAlias(true);
         paint.setColor(color);
         paint.setShadowLayer(shadowRadius, 0f, shadowOffset, Color.argb(100, 0, 0, 0));
