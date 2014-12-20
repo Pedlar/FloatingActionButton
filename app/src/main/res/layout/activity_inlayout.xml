@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <org.notlocalhost.fab.FloatingActionButton
+        android:id="@+id/floating_action_button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/fab__normal_margin"
+        android:layout_marginBottom="@dimen/fab__normal_margin"
+        fab:fabColor="#ffff0000"
+        fab:fabMenu="@menu/menu_inlayout"
+        fab:fabGravity="bottom|right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>

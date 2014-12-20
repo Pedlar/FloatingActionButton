@@ -38,8 +38,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.activity_main);
-        mFab = new FloatingActionButton(this, false);
-        mFab.setAttachToWindow(true);
+        mFab = new FloatingActionButton(this, true);
 
         mFab.setGravity(Gravity.BOTTOM | Gravity.RIGHT);
 

@@ -3,15 +3,14 @@ package org.notlocalhost.fab;
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.internal.view.menu.MenuBuilder;
+import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,19 +49,20 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
 
     public FloatingActionButton(Activity context) {
         super(context);
-        init(context, false);
+        init(context, false, null);
     }
 
     public FloatingActionButton(Activity context, boolean attachToWindow) {
         super(context);
-        init(context, attachToWindow);
+        init(context, attachToWindow, null);
     }
 
-    private void init(Context context, boolean attachToWindow) {
-        setId(R.id.fab__main_container);
+    public FloatingActionButton(Context context, AttributeSet attributeSet) {
+        super(context, attributeSet);
+        init(context, false, attributeSet);
+    }
 
-        initThemeAttrs();
-
+    private void init(Context context, boolean attachToWindow, AttributeSet attributeSet) {
         if(context instanceof Activity) {
             Activity activity = (Activity)context;
             mWindow = activity.getWindow();
@@ -70,14 +70,18 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
 
         mAttachToWindow = attachToWindow;
 
-        ViewGroup.LayoutParams lParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        setLayoutParams(lParams);
+        if(mWindow != null && mAttachToWindow) {
+            setId(R.id.fab__main_container);
 
-        ((ViewGroup)mWindow.getDecorView()).addView(this);
-        bringToFront();
-        if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-            mWindow.getDecorView().requestLayout();
-            mWindow.getDecorView().invalidate();
+            ViewGroup.LayoutParams lParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            setLayoutParams(lParams);
+
+            ((ViewGroup) mWindow.getDecorView()).addView(this);
+            bringToFront();
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+                mWindow.getDecorView().requestLayout();
+                mWindow.getDecorView().invalidate();
+            }
         }
 
         mMenuFog = new View(getContext());
@@ -88,13 +92,23 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
         mMenuFog.setVisibility(View.GONE);
 
         setupActionButton();
+
+        initAttrs(attributeSet);
     }
 
-    private void initThemeAttrs() {
-        TypedArray typedArray = getContext().obtainStyledAttributes(R.styleable.fab);
+    private void initAttrs(AttributeSet attributeSet) {
+        TypedArray typedArray = getContext().obtainStyledAttributes(attributeSet, R.styleable.fab);
         if(typedArray != null) {
-            setSize(typedArray.getInt(R.styleable.fab_fabSize, SIZE_NORMAL));
-            setColor(typedArray.getColor(R.styleable.fab_fabColor, Color.RED));
+            setSize(typedArray.getInt(R.styleable.fab_fabSize, mSize));
+            setColor(typedArray.getColor(R.styleable.fab_fabColor, mColor));
+
+            setGravity(typedArray.getInt(R.styleable.fab_fabGravity, mButtonGravity));
+
+            int menuResId = typedArray.getResourceId(R.styleable.fab_fabMenu, -1);
+            if(menuResId > -1) {
+                setMenu(menuResId);
+            }
+
             typedArray.recycle();
         }
     }
@@ -117,7 +131,7 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
 
         RelativeLayout.LayoutParams actionButtonParams = new LayoutParams(size, size);
 
-        if(mAttachToWindow) {
+        if(mAttachToWindow || mAttachedView == null) {
             if ((mButtonGravity & Gravity.BOTTOM) == Gravity.BOTTOM) {
                 actionButtonParams.addRule(ALIGN_PARENT_BOTTOM, 1);
                 actionButtonParams.bottomMargin = buttonMargin;
@@ -136,6 +150,13 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
                 actionButtonParams.rightMargin = buttonMargin;
             } else if ((mButtonGravity & Gravity.CENTER_HORIZONTAL) == Gravity.CENTER_HORIZONTAL) {
                 actionButtonParams.addRule(CENTER_HORIZONTAL, 1);
+            }
+
+            if(!mAttachToWindow) {
+                actionButtonParams.rightMargin = 0;
+                actionButtonParams.leftMargin = 0;
+                actionButtonParams.topMargin = 0;
+                actionButtonParams.bottomMargin = 0;
             }
         } else {
             positionActionButton();
@@ -211,6 +232,7 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
             mActionMenuView.setMenuAnimation(mMenuAnimation);
         }
         addView(mActionMenuView, getActionMenuLayoutParams());
+        requestLayout();
         if(mActionButton != null) {
             mActionButton.setOnClickListener(new OnClickListener() {
                 @Override
@@ -408,6 +430,7 @@ public class FloatingActionButton extends RelativeLayout implements FloatingActi
             FloatingActionMenuItem menuItem = new FloatingActionMenuItem();
             menuItem.setLabel(menu.getItem(i).getTitle().toString());
             menuItem.setIcon(menu.getItem(i).getIcon());
+            menuItems.add(menuItem);
         }
         setupFloatingActionMenu(menuItems);
     }
